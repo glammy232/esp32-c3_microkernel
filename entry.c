@@ -4,14 +4,14 @@
 #define RTC_CNTL_WDTCONFIG0_REG		((volatile unsigned int *)0x60008098)
 #define RTC_CNTL_WDTWPROTECT_REG	((volatile unsigned int *)0x600080A4)
 
-#define GPIO_ENABLE_REG			((volatile unsigned int *)0x60004020)
+#define GPIO_ENABLE_REG				((volatile unsigned int *)0x60004020)
 
-#define GPIO_OUT_W1TS_REG		((volatile unsigned int *)0x60004008)
-#define GPIO_OUT_W1TC_REG		((volatile unsigned int *)0x6000400C)
+#define GPIO_OUT_W1TS_REG			((volatile unsigned int *)0x60004008)
+#define GPIO_OUT_W1TC_REG			((volatile unsigned int *)0x6000400C)
 
-#define UART0_FIFO_REG			((volatile unsigned int *)0x60000000)
-#define UART0_STATUS_REG		((volatile unsigned int *)0x6000001C)
-#define UART_TXFIFO_CNT_M		(0x000000FF)
+#define UART0_FIFO_REG				((volatile unsigned int *)0x60000000)
+#define UART0_STATUS_REG			((volatile unsigned int *)0x6000001C)
+#define UART_TXFIFO_CNT_M			(0x000000FF)
 
 void uart_putchar(char c)
 {
@@ -43,7 +43,7 @@ void blink(void)
 	}
 }
 
-int main(void)
+int mmain(void)
 {
 	*TIMG0_WDTWPROTECT_REG = 0x50D83AA1;
 	*TIMG0_WDTCONFIG0_REG = 0;
