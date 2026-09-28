@@ -10,10 +10,10 @@ SECTIONS
 {
 	.text :
 	{
-		_text_start = .;
+		. = ALIGN(4);
 		KEEP(*(.init))
 		*(.text .text.*)
-		_text_end = .;
+		. = ALIGN(4);
 	} > iram_seg
 
 	.rodata :
@@ -25,32 +25,22 @@ SECTIONS
 
 	.data :
 	{
-		_data_start = .;
-		*(.data .data.*)
-
 		. = ALIGN(4);
-		__global_pointer$ = . + 0x800;
-
-		_data_end = .;
+		*(.data .data.*)
+		. = ALIGN(4);
 	} > dram_seg
 
 	.bss :
 	{
 		. = ALIGN(4);
-    		_bss_start = .;
-    		*(.bss .bss.*)
-    		*(COMMON)
-    		. = ALIGN(4);
-    		_bss_end = .;
+		__bss_start = .;
+		*(.bss .bss.*)
+		*(COMMON)
+		. = ALIGN(4);
+		__bss_end = .;
 	} > dram_seg
 
-	.stack (NOLOAD) :
-	{
-		. = ALIGN(16);
-		_stack_bottom = .;
-		. += 4K;
-		_stack_top = .;
-	} > dram_seg
+	_stack_top = ALIGN((ORIGIN(dram_seg) + LENGTH(dram_seg)) - 16, 16);
 
-	/*_stack_top = ORIGIN(dram_seg) + LENGTH(dram_seg);*/
+	_end = .;
 }
