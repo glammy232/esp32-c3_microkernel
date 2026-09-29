@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 #define TIMG0_WDTCONFIG0_REG		((volatile unsigned int *)0x6001F048)
 #define TIMG0_WDTWPROTECT_REG		((volatile unsigned int *)0x6001F064)
 
@@ -18,6 +20,29 @@ void uart_putchar(char c)
 	while (((*UART0_STATUS_REG) & UART_TXFIFO_CNT_M) >= 126);
 
 	*UART0_FIFO_REG = (unsigned int)c;
+}
+
+void uart_print(const char *str)
+{
+	while (*str) {
+		uart_putchar(*str);
+		str++;
+	};
+}
+
+void uart_println(const char *str)
+{
+    uart_print(str);
+    uart_putchar('\r');
+    uart_putchar('\n');
+}
+
+void uart_print_hex(uint32_t v)
+{
+    static const char hex[] = "0123456789ABCDEF";
+    uart_print("0x");
+    for (int i = 28; i >= 0; i -= 4)
+        uart_putchar(hex[(v >> i) & 0xF]);
 }
 
 void blink(void)
