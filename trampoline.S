@@ -30,7 +30,9 @@ uservec:
 
 .globl userret
 userret:
+	/* a0 must point to trapframe (from usertrap) */
 
+	/* restore registers */
     lw ra, 0(a0)
     lw t0, 4(a0)
     lw t1, 8(a0)
@@ -47,6 +49,12 @@ userret:
     lw t5, 52(a0)
     lw t6, 56(a0)
 
+	/* write trapframe address to mscrach */
+	/* to find trapframe on the next interrupt */
+
+	csrw mscratch, a0
+
     lw a0, 60(a0)
 
     mret
+

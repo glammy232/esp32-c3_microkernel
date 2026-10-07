@@ -19,7 +19,8 @@ _bss_clear_loop:
 	addi t0, t0, 4
 	j _bss_clear_loop
 _bss_clear_done:
-	jal mmain
+	call mmain
 _loop:
 	wfi
 	j _loop
+
