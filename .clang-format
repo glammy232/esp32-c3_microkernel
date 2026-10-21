@@ -1,0 +1,76 @@
+# .clang-format
+---
+Language: Cpp
+BasedOnStyle: LLVM
+
+# --- Отступы и Форматирование (Стиль Линуса Торвальдса) ---
+UseTab: Always
+TabWidth: 8
+IndentWidth: 8
+ContinuationIndentWidth: 8
+ColumnLimit: 80
+
+# --- Фигурные скобки (Классический K&R / Linux Kernel) ---
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterClass: false
+  AfterControlStatement: Never
+  AfterEnum: false
+  AfterFunction: true        # В стиле Linux/MINIX скобка функции ВСЕГДА на новой строке
+  AfterNamespace: false
+  AfterObjCDeclaration: false
+  AfterStruct: false
+  AfterUnion: false
+  BeforeCatch: false
+  BeforeElse: false
+  IndentBraces: false
+  SplitEmptyFunction: true
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true
+
+# --- Пробелы внутри выражений ---
+SpaceAfterCStyleCast: false
+SpaceAfterTemplateKeyword: true
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCaseColon: false
+SpaceBeforeParens: ControlStatements
+SpaceInEmptyBlock: false
+SpaceInEmptyParentheses: false
+SpacesInAngles: false
+SpacesInConditionalStatement: false
+SpacesInCStyleCastParentheses: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+
+# --- Выравнивание (Опрятность микроядра) ---
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: None
+AlignConsecutiveDeclarations: None
+AlignEscapedNewlines: Left
+AlignOperands: true
+AlignTrailingComments: true
+
+# --- Переносы строк и Оптимизация ---
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortBlocksOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakAfterReturnType: None
+AlwaysBreakBeforeMultilineStrings: false
+
+# --- Специфика Bare-Metal и Системного программирования ---
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^<.*'
+    Priority: 1
+  - Regex: '^".*'
+    Priority: 2
+SortIncludes: true
+
+# Оставляем макросы bare-metal регистров в покое при форматировании
+MacroBlockBegin: '^#define'
+...
+

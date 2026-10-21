@@ -1,9 +1,11 @@
 #include <stdint.h>
 
-struct context {
-	uint32_t ra;	/* return address */
-	uint32_t sp;	/* stack pointer */
+#ifndef CPU_H
+#define CPU_H
 
+struct context {
+	uint32_t ra; /* return address */
+	uint32_t sp; /* stack pointer */
 	/* callee-saved registers - save when context switch perform */
 	uint32_t s0;
 	uint32_t s1;
@@ -24,17 +26,22 @@ struct cpu {
 	struct context context;
 };
 
+extern struct cpu cpu0;
+
+#endif
+
 struct trapframe {
-    uint32_t ra;       /* return address */
-    uint32_t sp;       /* stack pointer */
-    uint32_t gp;       /* global pointer */
-    uint32_t tp;       /* thread pointer */
-	/* temporaries */
-    uint32_t t0, t1, t2; // Temporaries */
-	/* saved registers / frame pointer */
-    uint32_t s0, s1;
+	uint32_t ra; /* return address */
+	uint32_t sp; /* stack pointer */
+	uint32_t gp; /* global pointer */
+	uint32_t tp; /* thread pointer */
+
+	uint32_t t0, t1, t2; /* temporaries */
+
+	uint32_t s0, s1; /* saved registers / frame pointer */
+
 	/* arguments */
-    uint32_t a0;
+	uint32_t a0;
 	uint32_t a1;
 	uint32_t a2;
 	uint32_t a3;
@@ -42,8 +49,9 @@ struct trapframe {
 	uint32_t a5;
 	uint32_t a6;
 	uint32_t a7;
+
 	/* saved registers*/
-    uint32_t s2;
+	uint32_t s2;
 	uint32_t s3;
 	uint32_t s4;
 	uint32_t s5;
@@ -54,36 +62,35 @@ struct trapframe {
 	uint32_t s10;
 	uint32_t s11;
 	/* temporaries*/
-    uint32_t t3;
+	uint32_t t3;
 	uint32_t t4;
 	uint32_t t5;
 	uint32_t t6;
 
-    uint32_t mepc;    /* machine exception program counter */
-    uint32_t mcause;
-    uint32_t mstatus;
+	uint32_t mepc; /* machine exception program counter */
+	uint32_t mcause;
+	uint32_t mstatus;
 };
 
-enum proc_state { RUNNING, RUNNABLE, BLOCKED };
+enum proc_state { READY, RUNNING, BLOCKED };
 
 struct proc {
-	uint32_t pid;					/* process ID */
-	enum proc_state state;			/* process state */
-	void *chan;						/* waiting channel for IPC/blockings */
-	int killed;						/* kill flag */
-	int xstate;						/* return code for wait */
-	struct proc *parent;			/* parent process */
+	struct trapframe trapframe;
 
-	uint32_t kstack;				/* kernel stack address */
-	uint32_t size;					/* size of process memory(bytes) */
+	uint32_t pid;	       /* process ID */
+	enum proc_state state; /* process state */
+	void *chan;	       /* waiting channel for IPC/blockings */
+	int killed;	       /* kill flag */
+	int xstate;	       /* return code for wait */
+	struct proc *parent;   /* parent process */
 
-	uint32_t pmp_base;				/* base physical address of process in SRAM  */
-	uint32_t pmp_size;				/* size of process memory region */
+	uint32_t kstack; /* kernel stack address */
+	uint32_t size;	 /* size of process memory(bytes) */
 
-	struct trapframe trapframe;		/*  */
+	uint32_t pmp_base; /* base physical address of process in SRAM  */
+	uint32_t pmp_size; /* size of process memory region */
 
-	struct context context;			/* switch() here to run process */
+	struct context context; /* switch() here to run process */
 
-	char name[16]; 					/* name for debugging */
+	char name[16]; /* name for debugging */
 };
-
