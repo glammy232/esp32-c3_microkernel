@@ -27,16 +27,18 @@ void trap_handler()
 	if (mcause & (1 << 31)) {
 		*SYSTIMER_INT_CLR_REG = (1 << 0);
 		ticks_count++;
+#if 0
+		if (ticks_count % 10 == 0)
+		uart_print("[KERNEL] System Tick!");
+		swtch(&p->context, &cpu0.context);
 
-		// if (ticks_count % 10 == 0)
-		// uart_print("[KERNEL] System Tick!");
-		// swtch(&p->context, &cpu0.context);
-
-		// p->state = RUNNING;
+		p->state = RUNNING;
+#endif
 	} else {
-		// uart_print("[KERNEL] FATAL: CPU Exception. mcause = ");
+#if 0
+		 uart_print("[KERNEL] FATAL: CPU Exception. mcause = ");
 
-		/*char hex[9];
+		char hex[9];
 		uint32_t val = mcause;
 		for (int i = 7; i >= 0; i--) {
 			int digit = val & 0xF;
@@ -45,7 +47,7 @@ void trap_handler()
 		}
 		hex[8] = '\0';
 		uart_print(hex);
-*/
+#endif
 		while (1)
 			;
 	}

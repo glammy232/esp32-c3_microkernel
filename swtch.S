@@ -1,4 +1,4 @@
-# Context switch
+# Context switching
 #
 #   void swtch(struct context *old, struct context *new);
 # 

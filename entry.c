@@ -1,4 +1,3 @@
-#if 1
 #include <stdint.h>
 
 #include "proc.h"
@@ -83,7 +82,7 @@ void uart_putchar(char c)
 	*UART0_FIFO_REG = (uint32_t)c;
 }
 
-#if 0
+#if 1
 void uart_print(const char *str)
 {
 	while (*str)
@@ -96,20 +95,20 @@ void uart_print(const char *str)
 void init_hardware(void)
 {
 #if 0
-	/* ---- 1. TIMG0 WDT ---- */
+	/* TIMG0 WDT */
 	*TIMG0_WDTWPROTECT_REG = 0x50D83AA1;
 	*TIMG0_WDTCONFIG0_REG &=
-		~((1u << 31) | (1u << 14)); // EN=0, FLASHBOOT_MOD_EN=0
+		~((1u << 31) | (1u << 14));
 	*TIMG0_WDTWPROTECT_REG = 0;
 
-	/* ---- 2. RTC_CNTL_WDT ---- */
+	/* RTC_CNTL_WDT */
 	*RTC_CNTL_WDTWPROTECT_REG = 0x50D83AA1;
-	*RTC_CNTL_WDTCONFIG0_REG &= ~(1u << 31); // RTC_CNTL_WDT_EN = 0
+	*RTC_CNTL_WDTCONFIG0_REG &= ~(1u << 31);
 	*RTC_CNTL_WDTWPROTECT_REG = 0;
 
-	/* ---- 3. Super Watchdog (SWD) — ОТДЕЛЬНЫЙ КЛЮЧ! ---- */
-	*RTC_CNTL_SWD_WPROTECT_REG = 0x8F1D312A; // <-- правильный ключ
-	*RTC_CNTL_SWD_CONF_REG |= (1u << 30);	 // SWD_DISABLE = 1
+	/* Super Watchdog (SWD) */
+	*RTC_CNTL_SWD_WPROTECT_REG = 0x8F1D312A;
+	*RTC_CNTL_SWD_CONF_REG |= (1u << 30);
 	*RTC_CNTL_SWD_WPROTECT_REG = 0;
 #endif
 
@@ -137,7 +136,7 @@ void init_timer(void)
 	*SYSTIMER_TARGET0_LO_REG = delay;
 	*SYSTIMER_TARGET0_HI_REG = 0;
 
-	/* bit 30 = ... mode; bit 29 = turn on comparator */
+	/* bit 30 = ... mode; bit 29 = turn on the comparator */
 	*SYSTIMER_CONF_REG |= (1 << 30) | (1 << 29);
 
 	/* accept comparator settings */
@@ -147,8 +146,6 @@ void init_timer(void)
 
 	uint32_t mie_flags = (1 << 7) | (1 << 11) | (1 << 3);
 	asm volatile("csrs mie, %0" : : "r"(mie_flags));
-
-	// asm volatile("csrs mie, %0" : : "r"(1 << 7));
 }
 
 extern void machine_pop_trapframe(struct trapframe *tf);
@@ -172,11 +169,7 @@ void blink_proc(void)
 
 void init_trap_handling(void)
 {
-	/**
-	 * Записываем адрес trap_vector в системный регистр mtvec.
-	 * Последние 2 бита регистра mtvec отвечают за режим
-	 * (00 = Direct, все прерывания прыгают в одну точку)
-	 */
+	/* (00 = Direct, все прерывания прыгают в одну точку) */
 	uint32_t vector_address = (uint32_t)trap_vector & ~0x3;
 
 	asm volatile("csrw mtvec, %0" : : "r"(vector_address));
@@ -195,13 +188,17 @@ void init_first_process(void)
 	/* where we return after mk initialization */
 	p->trapframe.mepc = (uint32_t)blink_proc;
 
-	/* mstatus initialization */
-	/* mpie = 1 (get access to interrupts after mret */
-	/* mpp = 11 (machine-mode) */
+	/**
+	 * mstatus initialization
+	 * mpie = 1 (get access to interrupts after mret
+	 * mpp = 11 (machine-mode)
+	 */
 	p->trapframe.mstatus = (3 << 11) | (1 << 7) | (1 << 3);
 
-	/* setting context for scheduler */
-	/* when the scheduler do swtch(), it jumps to context.ra */
+	/**
+	 * setting context for scheduler
+	 * when the scheduler call swtch(), it jumps to context.ra
+	 */
 	p->context.ra = (uint32_t)machine_pop_trapframe;
 
 	/* processor will read data from trapframe firstly */
@@ -225,7 +222,9 @@ int mmain(void)
 
 	init_first_process();
 
-	// init_timer();
+#if 0
+	init_timer();
+#endif
 
 	struct proc *p = &proc_table[0];
 
@@ -234,67 +233,3 @@ int mmain(void)
 	while (1)
 		;
 }
-#endif
-
-#if 0
-#define TIMG0_WDTCONFIG0_REG ((volatile unsigned int *)0x6001F048)
-#define TIMG0_WDTWPROTECT_REG ((volatile unsigned int *)0x6001F064)
-
-#define RTC_CNTL_WDTCONFIG0_REG ((volatile unsigned int *)0x60008098)
-#define RTC_CNTL_WDTWPROTECT_REG ((volatile unsigned int *)0x600080A4)
-
-#define GPIO_ENABLE_REG ((volatile unsigned int *)0x60004020)
-
-#define GPIO_OUT_W1TS_REG ((volatile unsigned int *)0x60004008)
-#define GPIO_OUT_W1TC_REG ((volatile unsigned int *)0x6000400C)
-
-#define UART0_FIFO_REG ((volatile unsigned int *)0x60000000)
-#define UART0_STATUS_REG ((volatile unsigned int *)0x6000001C)
-#define UART_TXFIFO_CNT_M (0x000000FF)
-
-void uart_putchar(char c)
-{
-	while (((*UART0_STATUS_REG) & UART_TXFIFO_CNT_M) >= 126)
-		;
-
-	*UART0_FIFO_REG = (unsigned int)c;
-}
-
-void blink(void)
-{
-	*GPIO_ENABLE_REG |= (1 << 8);
-
-	while (1) {
-		*GPIO_OUT_W1TC_REG = (1 << 8);
-
-		uart_putchar('O');
-		uart_putchar('N');
-		uart_putchar('\n');
-
-		for (volatile int i = 0; i < 4000000; i++)
-			;
-
-		*GPIO_OUT_W1TS_REG = (1 << 8);
-
-		uart_putchar('O');
-		uart_putchar('F');
-		uart_putchar('F');
-
-		for (volatile int i = 0; i < 4000000; i++)
-			;
-	}
-}
-
-int mmain(void)
-{
-	*TIMG0_WDTWPROTECT_REG = 0x50D83AA1;
-	*TIMG0_WDTCONFIG0_REG = 0;
-	*TIMG0_WDTWPROTECT_REG = 0;
-
-	*RTC_CNTL_WDTWPROTECT_REG = 0x50D83AA1;
-	*RTC_CNTL_WDTCONFIG0_REG = 0;
-	*RTC_CNTL_WDTWPROTECT_REG = 0;
-
-	blink();
-}
-#endif

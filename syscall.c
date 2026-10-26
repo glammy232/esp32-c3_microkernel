@@ -1,11 +1,13 @@
-#include <stdint.h>
 #include "syscall.h"
-#include "proc.h"
+
+#include <stdint.h>
+
 #include "defs.h"
+#include "proc.h"
 
 extern uint32_t sys_fork(void);
 extern uint32_t sys_exec(void);
-extern uint32_t	sys_wait(void);
+extern uint32_t sys_wait(void);
 extern uint32_t sys_write(void);
 extern uint32_t sys_brk(void);
 extern uint32_t sys_sbrk(void);
@@ -20,17 +22,23 @@ extern uint32_t sys_kill(void);
 
 uint32_t argraw(int n)
 {
-	struct proc *p; /* = myproc(); */
+	struct proc *p;
 
 	switch (n) {
-	case 0: return p->trapframe.a0;
-	case 1: return p->trapframe.a1;
-	case 2: return p->trapframe.a2;
-	case 3: return p->trapframe.a3;
-	case 4: return p->trapframe.a4;
-	case 5: return p->trapframe.a5;
+	case 0:
+		return p->trapframe.a0;
+	case 1:
+		return p->trapframe.a1;
+	case 2:
+		return p->trapframe.a2;
+	case 3:
+		return p->trapframe.a3;
+	case 4:
+		return p->trapframe.a4;
+	case 5:
+		return p->trapframe.a5;
 	}
-  	/* panic("argraw"); */
+	/* panic("argraw"); */
 	return -1;
 }
 
@@ -43,32 +51,23 @@ void argint(int n, int *ip)
 // get pointer like an argument
 void argaddr(int n, uint32_t *ip)
 {
-  *ip = argraw(n);
+	*ip = argraw(n);
 }
 
-
-
 static uint32_t (*syscalls[])(void) = {
-	[SYS_fork]		= sys_fork,
-	[SYS_exec]		= sys_exec,
-	[SYS_wait]		= sys_wait,
-	[SYS_read]		= sys_read,
-	[SYS_write]		= sys_write,
-	[SYS_brk]		= sys_brk,
-	[SYS_sbrk]		= sys_sbrk,
-	[SYS_mmap]		= sys_mmap,
-	[SYS_open]		= sys_open,
-	[SYS_close]		= sys_close,
-	[SYS_yield]		= sys_yield,
-	[SYS_getpid]	= sys_getpid,
-	[SYS_exit]		= sys_exit,
-	[SYS_kill]		= sys_kill,
+	[SYS_fork] = sys_fork,	 [SYS_exec] = sys_exec,
+	[SYS_wait] = sys_wait,	 [SYS_read] = sys_read,
+	[SYS_write] = sys_write, [SYS_brk] = sys_brk,
+	[SYS_sbrk] = sys_sbrk,	 [SYS_mmap] = sys_mmap,
+	[SYS_open] = sys_open,	 [SYS_close] = sys_close,
+	[SYS_yield] = sys_yield, [SYS_getpid] = sys_getpid,
+	[SYS_exit] = sys_exit,	 [SYS_kill] = sys_kill,
 };
 
 void syscall(void)
 {
 	int num;
-	struct proc *p; /* = myproc();*/
+	struct proc *p;
 
 	num = p->trapframe.a7;
 	if (num > 0 && num < NOE(syscalls) && syscalls[num]) {
@@ -77,4 +76,3 @@ void syscall(void)
 		/* unknown syscall */
 	}
 }
-
