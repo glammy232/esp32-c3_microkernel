@@ -2,3 +2,5 @@ kernel.elf
 kernel.bin
 buk/
 debug.txt
+compile_flags.txt
+kernel.*

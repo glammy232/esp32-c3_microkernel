@@ -1,7 +1,26 @@
 # Machine pop trapframe (func place in entry.c)
 
-.global machine_pop_trapframe
-machine_pop_trapframe:
+.section ".text.mtvec_table", "ax"
+.align 8
+.global mtvec_table
+mtvec_table:
+	.org mtvec_table + 0*4
+	jal zero,mtvec_exception	# 0
+	.org mtvec_table + 1*4
+	jal zero,mtvec_ssi		# 1
+	.org mtvec_table + 3*4
+	jal zero,mtvec_msi		# 3
+	.org mtvec_table + 5*4
+	jal zero,mtvec_sti		# 5
+	.org mtvec_table + 7*4
+	jal zero,mtvec_mti		# 7
+	.org mtvec_table + 9*4
+	jal zero,mtvec_sei		# 9
+	.org mtvec_table + 11*4
+	jal zero,mtvec_mei		# 11
+
+.global pop_trapframe
+pop_trapframe:
 	lw t0, 124(a0)
 	csrw mepc, t0
 
@@ -12,11 +31,11 @@ machine_pop_trapframe:
 	lw gp, 8(a0)
 	lw tp, 12(a0)
 
-    lw t1, 20(a0)
-    lw t2, 24(a0)
+	lw t1, 20(a0)
+	lw t2, 24(a0)
 
-    lw s0, 28(a0)
-    lw s1, 32(a0)
+	lw s0, 28(a0)
+	lw s1, 32(a0)
 
 	lw a1, 40(a0)
 	lw a2, 44(a0)
@@ -42,32 +61,29 @@ machine_pop_trapframe:
 	lw t5, 116(a0)
 	lw t6, 120(a0)
 
-    lw sp, 4(a0)
+	csrw mscratch, a0
 
+	lw sp, 4(a0)
 	lw t0, 16(a0)
 	lw a0, 36(a0)
 
-    # jump into the process, interrupts enable thanks to mstatus.mpie
-    mret
+	# jump into the process, interrupts enable thanks to mstatus.mpie
+	mret
 
 .global trap_vector
 .align 4
 trap_vector:
-	csrw mscratch, t0
-
-	la t0, cpu0
-	lw t0, 0(t0)
+	csrrw t0, mscratch, t0	# trapframe addr in t0
 
 	sw ra, 0(t0)
 	sw sp, 4(t0)
 	sw gp, 8(t0)
 	sw tp, 12(t0)
 
-	sw t1, 20(t0)
-	sw t2, 24(t0)
-
-	csrr t1, mscratch
+	csrr t1, mscratch	# save t0 which placed in mscratch
 	sw t1, 16(t0)
+
+	sw t2, 24(t0)
 
 	sw s0, 28(t0)
 	sw s1, 32(t0)
@@ -110,12 +126,7 @@ trap_vector:
 
 	la t0, cpu0
 	lw a0, 0(t0)
-	j machine_pop_trapframe
-
-
-
-
-
+	jal zero,pop_trapframe
 
 .section .bss
 .align 16

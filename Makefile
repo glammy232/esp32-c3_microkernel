@@ -9,8 +9,8 @@ CC = riscv-none-elf-gcc
 ESPTOOL = esptool.py
 
 ARCH_FLAGS = -march=rv32imac_zicsr -mabi=ilp32
-CFLAGS = $(ARCH_FLAGS) -T linker.ld -nostdlib -ffreestanding -O0 -g3 -fno-omit-frame-pointer -mno-relax -Wl,--gc-sections
-SRC = entry.S trapvec.S swtch.S entry.c trap.c
+CFLAGS = $(ARCH_FLAGS) -T ./kernel/include/linker.ld -nostdlib -ffreestanding -O0 -g3 -fno-omit-frame-pointer -mno-relax -Wl,--gc-sections
+SRC = ./kernel/include/entry.S ./kernel/include/trapvec.S ./kernel/include/swtch.S ./kernel/entry.c
 
 all: $(TARGET).bin
 
@@ -23,7 +23,7 @@ $(TARGET).asm:
 	@echo "=== Компиляция ASM дампа ==="
 	riscv-none-elf-objdump -S -d -l $(TARGET).elf > $(TARGET).asm
 
-$(TARGET).elf: $(SRC) linker.ld
+$(TARGET).elf: $(SRC) ./kernel/include/linker.ld
 	@echo "=== Компиляция ELF ==="
 	$(CC) $(CFLAGS) -o $@ $(SRC)
 
