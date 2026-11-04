@@ -1,6 +1,8 @@
 kernel.elf
 kernel.bin
+*.buk
 buk/
 debug.txt
 compile_flags.txt
 kernel.*
+devlog.txt

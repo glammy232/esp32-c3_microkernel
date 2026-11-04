@@ -26,17 +26,21 @@ init_uart(void)
 void
 uart_putchar(char c)
 {
+#if 1
     while (((*UART0_STATUS_REG) & UART_TXFIFO_CNT_M) >= 126)
         ;
 
     *UART0_FIFO_REG = (uint32_t)c;
+#endif
 }
 
 void
-uart_print(const char *str)
+uart_print(const char *s)
 {
-    while (*str)
-        uart_putchar(*str++);
+    /*while (*s != '\0') {
+        uart_putchar(*s);
+        s++;
+    }*/
     uart_putchar('\r');
     uart_putchar('\n');
 }

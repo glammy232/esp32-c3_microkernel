@@ -1,4 +1,5 @@
-#include <stdint.h>
+#include "kernel/types.h"
+#include "user/uart.h"
 
 #define IO_MUX_GPIO8_REG  ((volatile uint32_t *)0x60009024)
 #define GPIO_ENABLE_REG   ((volatile uint32_t *)0x60004020)
@@ -7,7 +8,7 @@
 #define LED_PIN           8
 
 void
-init_blinc(void)
+init_blink(void)
 {
     uint32_t reg_val = *IO_MUX_GPIO8_REG;
     reg_val &= ~((7 << 12) | (1 << 7) | (1 << 8));
@@ -17,18 +18,17 @@ init_blinc(void)
 }
 
 void
-blink_proc(void)
+blink(void)
 {
     while (1) {
         *GPIO_OUT_W1TC_REG = (1 << LED_PIN);
         uart_putchar('O');
         uart_putchar('N');
         uart_putchar('\n');
-        delay_ms(500);
 
         *GPIO_OUT_W1TS_REG = (1 << LED_PIN);
         uart_putchar('O');
         uart_putchar('F');
-        delay_ms(500);
+        uart_putchar('\n');
     }
 }

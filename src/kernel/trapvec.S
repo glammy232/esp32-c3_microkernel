@@ -1,23 +1,66 @@
-# Machine pop trapframe (func place in entry.c)
-
-.section ".text.mtvec_table", "ax"
+.option norvc
+.section .text, "ax"
 .align 8
 .global mtvec_table
 mtvec_table:
-	.org mtvec_table + 0*4
-	jal zero,mtvec_exception	# 0
-	.org mtvec_table + 1*4
-	jal zero,mtvec_ssi		# 1
-	.org mtvec_table + 3*4
-	jal zero,mtvec_msi		# 3
-	.org mtvec_table + 5*4
-	jal zero,mtvec_sti		# 5
-	.org mtvec_table + 7*4
-	jal zero,mtvec_mti		# 7
-	.org mtvec_table + 9*4
-	jal zero,mtvec_sei		# 9
-	.org mtvec_table + 11*4
-	jal zero,mtvec_mei		# 11
+	.word mtvec_exception
+
+	.align 2
+	jal zero,_vec_1
+	.align 2
+	jal zero,_vec_empty
+	.align 2
+	jal zero,_vec_3
+	.align 2
+	jal zero,_vec_empty
+	.align 2
+	jal zero,_vec_5
+	.align 2
+	jal zero,_vec_empty
+	.align 2
+	jal zero,_vec_7
+	.align 2
+	jal zero,_vec_empty
+	.align 2
+	jal zero,_vec_9
+	.align 2
+	jal zero,_vec_empty
+	.align 2
+	jal zero,_vec_11
+
+	.align 2
+	.rept 20
+	j _vec_empty
+	.endr
+.option rvc
+
+_vec_1:
+	li t0, 7
+	j trap_vector
+
+_vec_3:
+	li t0, 3
+	j trap_vector
+
+_vec_5:
+	li t0, 5
+	j trap_vector
+
+_vec_7:
+	li t0, 7
+	j trap_vector
+
+_vec_9:
+	li t0, 9
+	j trap_vector
+
+_vec_11:
+	li t0, 11
+	j trap_vector
+
+.align 2
+_vec_empty:
+	mret
 
 .global pop_trapframe
 pop_trapframe:
@@ -124,8 +167,8 @@ trap_vector:
 
 	call trap_handler
 
-	la t0, cpu0
-	lw a0, 0(t0)
+	#la t0, cpu0
+	#lw a0, 0(t0)
 	jal zero,pop_trapframe
 
 .section .bss
