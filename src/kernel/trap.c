@@ -64,6 +64,8 @@ init_trap_handling(void)
     asm volatile("csrw mtvec, %0"
                  :
                  : "r"((uintptr_t)mtvec_table | RISCV_MTVEC_MODE_VECTORED));
+    asm volatile("csrw mie, zero");
+    asm volatile("csrw mip, zero");
 
 #if 0
     struct proc *p = cpu0.proc;

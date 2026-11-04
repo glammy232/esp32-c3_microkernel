@@ -11,6 +11,9 @@ _start:
 
     mv s0, zero
 
+    li t0, 0x00001800	# reset mstatus
+    csrw mstatus, t0
+
     # turning off TIMG0 WDT
     li t0, 0x6001F064          # TIMG0_WDTWPROTECT_REG
     li t1, 0x50D83AA1
