@@ -76,21 +76,17 @@ enum proc_state { READY, RUNNING, BLOCKED };
 
 struct proc {
     struct trapframe trapframe;
+    struct context context; /* switch() here to run process */
 
     uint32_t pid;          /* process ID */
+    char name[16];         /* name for debugging */
     enum proc_state state; /* process state */
     void *chan;            /* waiting channel for IPC/blockings */
     int killed;            /* kill flag */
-    int xstate;            /* return code for wait */
-    struct proc *parent;   /* parent process */
 
     uint32_t kstack; /* kernel stack address */
     uint32_t size;   /* size of process memory(bytes) */
 
     uint32_t pmp_base; /* base physical address of process in SRAM  */
     uint32_t pmp_size; /* size of process memory region */
-
-    struct context context; /* switch() here to run process */
-
-    char name[16]; /* name for debugging */
 };

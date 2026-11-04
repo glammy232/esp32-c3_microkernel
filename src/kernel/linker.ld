@@ -48,6 +48,8 @@ SECTIONS
 		__bss_end = .;
 	} > dram_seg
 
+	_end = .;
+
 	_stack_top = ORIGIN(dram_seg) + LENGTH(dram_seg); 
 
 	_stack_top = ALIGN(_stack_top - 16, 16);

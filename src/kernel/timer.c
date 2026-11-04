@@ -46,7 +46,7 @@ init_extsystimer(void)
      * give access to external interrupts only(Systimer generate external
      * interrupts
      */
-    asm volatile("csrw mie, %0" : : "r"(1 << 11));
+    asm volatile("csrs mie, %0" : : "r"(1 << 11));
 
-    asm volatile("csrw mstatus, %0" : : "r"(1 << 3));
+    asm volatile("csrs mstatus, %0" : : "r"(1 << 3));
 }

@@ -35,27 +35,27 @@ mtvec_table:
 .option rvc
 
 _vec_1:
-	li t0, 7
+	#li t0, 7
 	j trap_vector
 
 _vec_3:
-	li t0, 3
+	#li t0, 3
 	j trap_vector
 
 _vec_5:
-	li t0, 5
+	#li t0, 5
 	j trap_vector
 
 _vec_7:
-	li t0, 7
+	#li t0, 7
 	j trap_vector
 
 _vec_9:
-	li t0, 9
+	#li t0, 9
 	j trap_vector
 
 _vec_11:
-	li t0, 11
+	#li t0, 11
 	j trap_vector
 
 .align 2
@@ -64,6 +64,9 @@ _vec_empty:
 
 .global pop_trapframe
 pop_trapframe:
+	csrr a0, mscratch
+	#la t0, cpu0
+	#lw a0, 0(t0)	# a0 = cpu0.proc = &p->trapframe
 	lw t0, 124(a0)
 	csrw mepc, t0
 
@@ -123,8 +126,8 @@ trap_vector:
 	sw gp, 8(t0)
 	sw tp, 12(t0)
 
+	sw t1, 20(t0)
 	csrr t1, mscratch	# save t0 which placed in mscratch
-	sw t1, 16(t0)
 
 	sw t2, 24(t0)
 
@@ -163,6 +166,8 @@ trap_vector:
 	csrr t1, mstatus
 	sw t1, 132(t0)
 
+	csrw mscratch, t0 # mscratch = &p->trapframe
+
 	la sp, trap_stack_top
 
 	call trap_handler
@@ -174,5 +179,5 @@ trap_vector:
 .section .bss
 .align 16
 trap_stack_base:
-	.space 2048
+	.space 4096
 trap_stack_top:

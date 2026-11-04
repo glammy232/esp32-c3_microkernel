@@ -37,10 +37,10 @@ uart_putchar(char c)
 void
 uart_print(const char *s)
 {
-    /*while (*s != '\0') {
+    while (*s) {
         uart_putchar(*s);
         s++;
-    }*/
+    }
     uart_putchar('\r');
     uart_putchar('\n');
 }
