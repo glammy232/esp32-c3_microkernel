@@ -1,7 +1,69 @@
-# Machine pop trapframe (func place in entry.c)
+.option norvc
+.section .text, "ax"
+.align 8
+.global mtvec_table
+mtvec_table:
+	.word mtvec_exception
 
-.global machine_pop_trapframe
-machine_pop_trapframe:
+	.align 2
+	jal zero,_vec_1
+	.align 2
+	jal zero,_vec_empty
+	.align 2
+	jal zero,_vec_3
+	.align 2
+	jal zero,_vec_empty
+	.align 2
+	jal zero,_vec_5
+	.align 2
+	jal zero,_vec_empty
+	.align 2
+	jal zero,_vec_7
+	.align 2
+	jal zero,_vec_empty
+	.align 2
+	jal zero,_vec_9
+	.align 2
+	jal zero,_vec_empty
+	.align 2
+	jal zero,_vec_11
+
+	.align 2
+	.rept 20
+	j _vec_empty
+	.endr
+.option rvc
+
+_vec_1:
+	li t0, 7
+	j trap_vector
+
+_vec_3:
+	li t0, 3
+	j trap_vector
+
+_vec_5:
+	li t0, 5
+	j trap_vector
+
+_vec_7:
+	li t0, 7
+	j trap_vector
+
+_vec_9:
+	li t0, 9
+	j trap_vector
+
+_vec_11:
+	li t0, 11
+	j trap_vector
+
+.align 2
+_vec_empty:
+	mret
+
+.global pop_trapframe
+pop_trapframe:
 	lw t0, 124(a0)
 	csrw mepc, t0
 
@@ -12,11 +74,11 @@ machine_pop_trapframe:
 	lw gp, 8(a0)
 	lw tp, 12(a0)
 
-    lw t1, 20(a0)
-    lw t2, 24(a0)
+	lw t1, 20(a0)
+	lw t2, 24(a0)
 
-    lw s0, 28(a0)
-    lw s1, 32(a0)
+	lw s0, 28(a0)
+	lw s1, 32(a0)
 
 	lw a1, 40(a0)
 	lw a2, 44(a0)
@@ -42,32 +104,29 @@ machine_pop_trapframe:
 	lw t5, 116(a0)
 	lw t6, 120(a0)
 
-    lw sp, 4(a0)
+	csrw mscratch, a0
 
+	lw sp, 4(a0)
 	lw t0, 16(a0)
 	lw a0, 36(a0)
 
-    # jump into the process, interrupts enable thanks to mstatus.mpie
-    mret
+	# jump into the process, interrupts enable thanks to mstatus.mpie
+	mret
 
 .global trap_vector
 .align 4
 trap_vector:
-	csrw mscratch, t0
-
-	la t0, cpu0
-	lw t0, 0(t0)
+	csrrw t0, mscratch, t0	# trapframe addr in t0
 
 	sw ra, 0(t0)
 	sw sp, 4(t0)
 	sw gp, 8(t0)
 	sw tp, 12(t0)
 
-	sw t1, 20(t0)
-	sw t2, 24(t0)
-
-	csrr t1, mscratch
+	csrr t1, mscratch	# save t0 which placed in mscratch
 	sw t1, 16(t0)
+
+	sw t2, 24(t0)
 
 	sw s0, 28(t0)
 	sw s1, 32(t0)
@@ -108,14 +167,9 @@ trap_vector:
 
 	call trap_handler
 
-	la t0, cpu0
-	lw a0, 0(t0)
-	j machine_pop_trapframe
-
-
-
-
-
+	#la t0, cpu0
+	#lw a0, 0(t0)
+	jal zero,pop_trapframe
 
 .section .bss
 .align 16

@@ -1,0 +1,10 @@
+---
+Checks: 'clang-diagnostic-*,bugprone-*,cert-*,performance-*,portability-*,readability-avoid-const-params-in-decomp,readability-misplaced-array-index'
+
+WarningsAsErrors: 'bugprone-use-after-move,bugprone-suspicious-string-compare,bugprone-sizeof-expression'
+
+CheckOptions:
+  - key:             bugprone-sizeof-expression.WarnOnSizeOfConstant
+    value:           'true'
+...
+

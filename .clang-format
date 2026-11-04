@@ -1,76 +1,43 @@
-# .clang-format
 ---
-Language: Cpp
 BasedOnStyle: LLVM
+Language: Cpp
+Standard: Auto
 
-# --- Отступы и Форматирование (Стиль Линуса Торвальдса) ---
-UseTab: Always
-TabWidth: 8
-IndentWidth: 8
-ContinuationIndentWidth: 8
-ColumnLimit: 80
+AlwaysBreakAfterReturnType: AllDefinitions
+AlwaysBreakAfterDefinitionReturnType: All
 
-# --- Фигурные скобки (Классический K&R / Linux Kernel) ---
+ColumnLimit: 79
+
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
 BreakBeforeBraces: Custom
 BraceWrapping:
-  AfterCaseLabel: false
-  AfterClass: false
+  AfterFunction: true
   AfterControlStatement: Never
-  AfterEnum: false
-  AfterFunction: true        # В стиле Linux/MINIX скобка функции ВСЕГДА на новой строке
-  AfterNamespace: false
-  AfterObjCDeclaration: false
   AfterStruct: false
   AfterUnion: false
-  BeforeCatch: false
   BeforeElse: false
-  IndentBraces: false
-  SplitEmptyFunction: true
-  SplitEmptyRecord: true
-  SplitEmptyNamespace: true
 
-# --- Пробелы внутри выражений ---
-SpaceAfterCStyleCast: false
-SpaceAfterTemplateKeyword: true
-SpaceBeforeAssignmentOperators: true
-SpaceBeforeCaseColon: false
-SpaceBeforeParens: ControlStatements
-SpaceInEmptyBlock: false
-SpaceInEmptyParentheses: false
-SpacesInAngles: false
-SpacesInConditionalStatement: false
-SpacesInCStyleCastParentheses: false
-SpacesInParentheses: false
-SpacesInSquareBrackets: false
+PointerAlignment: Right
 
-# --- Выравнивание (Опрятность микроядра) ---
-AlignAfterOpenBracket: Align
+AlignConsecutiveMacros: Consecutive
 AlignConsecutiveAssignments: None
 AlignConsecutiveDeclarations: None
-AlignEscapedNewlines: Left
-AlignOperands: true
 AlignTrailingComments: true
 
-# --- Переносы строк и Оптимизация ---
-AllowAllParametersOfDeclarationOnNextLine: false
-AllowShortBlocksOnASingleLine: false
-AllowShortCaseLabelsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: None
-AllowShortIfStatementsOnASingleLine: Never
-AllowShortLoopsOnASingleLine: false
-AlwaysBreakAfterReturnType: None
-AlwaysBreakBeforeMultilineStrings: false
+SpaceAfterCStyleCast: false
+SpaceBeforeParens: ControlStatements
 
-# --- Специфика Bare-Metal и Системного программирования ---
-IncludeBlocks: Regroup
-IncludeCategories:
-  - Regex: '^<.*'
-    Priority: 1
-  - Regex: '^".*'
-    Priority: 2
-SortIncludes: true
+SortIncludes: false
 
-# Оставляем макросы bare-metal регистров в покое при форматировании
-MacroBlockBegin: '^#define'
+AttributeMacros:
+  - '__attribute__'
+  - 'IRAM_ATTR'
+  - 'DRAM_ATTR'
+  - 'FORCE_INLINE'
+
+CommentPragmas: '^ clang-format (off|on)$'
 ...
 

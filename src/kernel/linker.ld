@@ -4,9 +4,6 @@ MEMORY
 {
 	iram_seg (RX) : ORIGIN = 0x40380000, LENGTH = 192K
 	dram_seg (RW) : ORIGIN = 0x3FC80000, LENGTH = 208K
-
-	/*iram_seg (RX) : ORIGIN = 0x40380000, LENGTH = 384K
-	dram_seg (RW) : ORIGIN = 0x3FC80000, LENGTH = 384K*/
 }
 
 SECTIONS
@@ -50,8 +47,6 @@ SECTIONS
 		. = ALIGN(4);
 		__bss_end = .;
 	} > dram_seg
-
-  /* _stack_top = ALIGN(ORIGIN(dram_seg) + LENGTH(dram_seg) - 16, 16); */
 
 	_stack_top = ORIGIN(dram_seg) + LENGTH(dram_seg); 
 
